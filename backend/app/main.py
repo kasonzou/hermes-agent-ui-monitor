@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.api.v1.router import api_router
+from app.api.ws.router import router as ws_router
 
 # 配置日志
 logging.basicConfig(
@@ -79,6 +80,9 @@ async def health_check():
 
 # 注册 API 路由
 app.include_router(api_router, prefix="/api/v1")
+
+# 注册 WebSocket 路由
+app.include_router(ws_router)
 
 
 @app.get("/")
