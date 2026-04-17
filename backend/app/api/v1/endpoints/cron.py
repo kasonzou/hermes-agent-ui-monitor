@@ -44,7 +44,7 @@ async def list_cron_jobs(
     try:
         cli = get_hermes_cli()
 
-        cmd = ["cron", "ls", "--format", "json"]
+        cmd = ["cron", "--format", "json"]
         if enabled_only:
             cmd.append("--enabled")
 
@@ -193,7 +193,7 @@ async def delete_cron_job(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["cron", "remove", job_name])
+        result = await cli.run(["cron", "delete", job_name])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to delete cron job: {result.stderr}")

@@ -28,7 +28,7 @@ async def list_tools(
         cli = get_hermes_cli()
 
         # 获取工具列表
-        cmd = ["tool", "ls", "--format", "json"]
+        cmd = ["tools", "--format", "json"]
         if enabled_only:
             cmd.append("--enabled")
 
@@ -65,7 +65,7 @@ async def get_tool(
         cli = get_hermes_cli()
 
         # 获取工具详情
-        result = await cli.run(["tool", "show", tool_name, "--format", "json"])
+        result = await cli.run(["tools", "show", tool_name, "--format", "json"])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Tool not found: {tool_name}")
@@ -94,7 +94,7 @@ async def enable_tool(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["tool", "enable", tool_name])
+        result = await cli.run(["tools", "enable", tool_name])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to enable tool: {result.stderr}")
@@ -120,7 +120,7 @@ async def disable_tool(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["tool", "disable", tool_name])
+        result = await cli.run(["tools", "disable", tool_name])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to disable tool: {result.stderr}")
@@ -146,7 +146,7 @@ async def get_tool_config(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["tool", "config", "get", tool_name, "--format", "json"])
+        result = await cli.run(["tools", "config", "get", tool_name, "--format", "json"])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to get tool config: {result.stderr}")
@@ -180,7 +180,7 @@ async def update_tool_config(
         import json
         config_json = json.dumps(config)
 
-        result = await cli.run(["tool", "config", "set", tool_name, config_json])
+        result = await cli.run(["tools", "config", "set", tool_name, config_json])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to update tool config: {result.stderr}")
@@ -205,7 +205,7 @@ async def reload_tools(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["tool", "reload"])
+        result = await cli.run(["tools", "reload"])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to reload tools: {result.stderr}")
@@ -230,7 +230,7 @@ async def get_tool_schema(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["tool", "schema", tool_name, "--format", "json"])
+        result = await cli.run(["tools", "schema", tool_name, "--format", "json"])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to get tool schema: {result.stderr}")
@@ -263,7 +263,7 @@ async def test_tool(
         import json
         params_json = json.dumps(params)
 
-        result = await cli.run(["tool", "test", tool_name, params_json])
+        result = await cli.run(["tools", "test", tool_name, params_json])
 
         import json
         try:

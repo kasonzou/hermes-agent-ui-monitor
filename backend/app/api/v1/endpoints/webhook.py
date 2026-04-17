@@ -43,7 +43,7 @@ async def list_webhooks(
     try:
         cli = get_hermes_cli()
 
-        cmd = ["webhook", "ls", "--format", "json"]
+        cmd = ["webhook", "--format", "json"]
         if enabled_only:
             cmd.append("--enabled")
 
@@ -191,7 +191,7 @@ async def delete_webhook(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["webhook", "remove", webhook_name])
+        result = await cli.run(["webhook", "delete", webhook_name])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to delete webhook: {result.stderr}")

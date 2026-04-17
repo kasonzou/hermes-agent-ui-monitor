@@ -43,7 +43,7 @@ async def list_mcp_servers(
     try:
         cli = get_hermes_cli()
 
-        cmd = ["mcp", "ls", "--format", "json"]
+        cmd = ["mcp", "--format", "json"]
         if enabled_only:
             cmd.append("--enabled")
 
@@ -192,7 +192,7 @@ async def delete_mcp_server(
     try:
         cli = get_hermes_cli()
 
-        result = await cli.run(["mcp", "remove", server_name])
+        result = await cli.run(["mcp", "delete", server_name])
 
         if result.returncode != 0:
             return create_error_response(1005, f"Failed to delete MCP server: {result.stderr}")
