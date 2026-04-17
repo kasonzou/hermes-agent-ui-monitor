@@ -1,0 +1,20 @@
+# FastAPI 核心依赖
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP 客户端
+httpx>=0.26.0
+
+# 数据库
+aiosqlite>=0.19.0
+
+# 工具库
+python-multipart>=0.0.6
+PyYAML>=6.0.1
+
+# 开发依赖（可选）
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+httpx>=0.26.0
