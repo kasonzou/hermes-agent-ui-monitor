@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from app.config import settings
 from app.api.v1.router import api_router
 from app.api.ws.router import router as ws_router
+from app.services import get_monitor_service, get_log_collector, get_job_queue
 
 # 配置日志
 logging.basicConfig(
@@ -24,10 +25,28 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
-    # 启动时的初始化
+
+    # 启动服务
+    monitor_service = get_monitor_service()
+    log_collector = get_log_collector()
+    job_queue = get_job_queue()
+
+    await job_queue.start()
+    await log_collector.start()
+    await monitor_service.start()
+
+    logger.info("All services started")
+
     yield
+
     # 关闭时的清理
     logger.info(f"Shutting down {settings.app_name}")
+
+    await monitor_service.stop()
+    await log_collector.stop()
+    await job_queue.stop()
+
+    logger.info("All services stopped")
 
 
 # 创建 FastAPI 应用
