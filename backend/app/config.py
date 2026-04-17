@@ -2,9 +2,10 @@
 配置管理模块
 使用 Pydantic Settings 管理环境变量和配置
 """
+import json
 from functools import lru_cache
-from typing import List, Optional
-from pydantic import Field
+from typing import List, Optional, Any
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -72,6 +73,26 @@ class Settings(BaseSettings):
     # 监控配置
     monitor_poll_interval: int = Field(default=30, description="监控轮询间隔（秒）")
     log_stream_buffer_size: int = Field(default=1000, description="日志流缓冲区大小")
+
+    @field_validator("cors_origins", "cors_allow_methods", "cors_allow_headers", mode="before")
+    @classmethod
+    def parse_list_field(cls, v: Any) -> List[str]:
+        """解析列表字段，处理字符串 JSON 格式"""
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return []
+            try:
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    return parsed
+                return [v]
+            except json.JSONDecodeError:
+                # 如果是逗号分隔的字符串
+                if "," in v:
+                    return [item.strip() for item in v.split(",")]
+                return [v]
+        return v
 
     @property
     def hermes_api_base_url(self) -> str:
