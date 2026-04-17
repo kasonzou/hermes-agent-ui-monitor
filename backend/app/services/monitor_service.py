@@ -212,14 +212,15 @@ class MonitorService:
     async def _check_and_push_gateway_status(self):
         """检查并推送网关状态"""
         try:
-            result = await self.cli.run(["gateway", "status", "--format", "json"])
+            result = await self.cli.run(["gateway", "status"])
 
             if result.returncode == 0:
-                import json
-                try:
-                    gateway_data = json.loads(result.stdout)
-                except json.JSONDecodeError:
-                    gateway_data = {"running": "unknown", "raw": result.stdout}
+                # 解析文本输出
+                output = result.stdout.lower()
+                gateway_data = {
+                    "running": "running" in output or "active" in output,
+                    "raw": result.stdout
+                }
             else:
                 gateway_data = {"running": False, "error": result.stderr}
 
