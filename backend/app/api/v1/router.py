@@ -4,7 +4,8 @@ API v1 路由聚合
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
     sessions, config, gateway, auth, skills,
-    logs, insights, system, proxy
+    logs, insights, system, proxy, tools, cron,
+    webhook, mcp, profile
 )
 
 api_router = APIRouter()
@@ -19,3 +20,10 @@ api_router.include_router(logs.router, prefix="/logs", tags=["logs"])
 api_router.include_router(insights.router, prefix="/insights", tags=["insights"])
 api_router.include_router(system.router, prefix="/system", tags=["system"])
 api_router.include_router(proxy.router, prefix="/proxy", tags=["proxy"])
+
+# 新增的模块路由
+api_router.include_router(tools.router, prefix="/tools", tags=["tools"])
+api_router.include_router(cron.router, prefix="/cron", tags=["cron"])
+api_router.include_router(webhook.router, prefix="/webhooks", tags=["webhooks"])
+api_router.include_router(mcp.router, prefix="/mcp", tags=["mcp"])
+api_router.include_router(profile.router, prefix="/profiles", tags=["profiles"])
