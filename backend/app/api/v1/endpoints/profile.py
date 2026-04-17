@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from app.core.security import get_current_user
+from app.core.security import verify_api_key
 from app.core.hermes_cli import get_hermes_cli, HermesCLIError
 from app.schemas.response import create_response, create_error_response
 
@@ -30,7 +30,7 @@ class ProfileUpdate(BaseModel):
 
 @router.get("")
 async def list_profiles(
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取所有 Profile 列表
@@ -62,7 +62,7 @@ async def list_profiles(
 @router.post("")
 async def create_profile(
     profile: ProfileCreate,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     创建新的 Profile
@@ -101,7 +101,7 @@ async def create_profile(
 @router.get("/{profile_name}")
 async def get_profile(
     profile_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取 Profile 详情
@@ -131,7 +131,7 @@ async def get_profile(
 async def delete_profile(
     profile_name: str,
     force: bool = Query(default=False, description="强制删除"),
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     删除 Profile
@@ -161,7 +161,7 @@ async def delete_profile(
 @router.post("/{profile_name}/switch")
 async def switch_profile(
     profile_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     切换到指定 Profile
@@ -187,7 +187,7 @@ async def switch_profile(
 @router.get("/{profile_name}/config")
 async def get_profile_config(
     profile_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取 Profile 配置
@@ -217,7 +217,7 @@ async def get_profile_config(
 async def update_profile_config(
     profile_name: str,
     config: dict,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     更新 Profile 配置
@@ -252,7 +252,7 @@ async def update_profile_config(
 
 @router.get("/current")
 async def get_current_profile(
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取当前使用的 Profile
@@ -282,7 +282,7 @@ async def get_current_profile(
 async def duplicate_profile(
     profile_name: str,
     new_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     复制 Profile
@@ -309,7 +309,7 @@ async def duplicate_profile(
 @router.get("/{profile_name}/export")
 async def export_profile(
     profile_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     导出 Profile 配置
@@ -342,7 +342,7 @@ async def export_profile(
 async def import_profile(
     name: str,
     config: dict,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     导入 Profile 配置
@@ -371,7 +371,7 @@ async def import_profile(
 @router.get("/{profile_name}/validate")
 async def validate_profile(
     profile_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     验证 Profile 配置

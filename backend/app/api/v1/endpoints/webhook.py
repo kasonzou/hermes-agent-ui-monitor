@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, HttpUrl
 
-from app.core.security import get_current_user
+from app.core.security import verify_api_key
 from app.core.hermes_cli import get_hermes_cli, HermesCLIError
 from app.schemas.response import create_response, create_error_response
 
@@ -36,7 +36,7 @@ class WebhookUpdate(BaseModel):
 @router.get("")
 async def list_webhooks(
     enabled_only: bool = Query(default=False, description="仅显示已启用的 Webhook"),
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取 Webhook 列表
@@ -72,7 +72,7 @@ async def list_webhooks(
 @router.post("")
 async def create_webhook(
     webhook: WebhookCreate,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     创建 Webhook
@@ -113,7 +113,7 @@ async def create_webhook(
 @router.get("/{webhook_name}")
 async def get_webhook(
     webhook_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取 Webhook 详情
@@ -143,7 +143,7 @@ async def get_webhook(
 async def update_webhook(
     webhook_name: str,
     update: WebhookUpdate,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     更新 Webhook
@@ -184,7 +184,7 @@ async def update_webhook(
 @router.delete("/{webhook_name}")
 async def delete_webhook(
     webhook_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     删除 Webhook
@@ -210,7 +210,7 @@ async def delete_webhook(
 @router.post("/{webhook_name}/enable")
 async def enable_webhook(
     webhook_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     启用 Webhook
@@ -236,7 +236,7 @@ async def enable_webhook(
 @router.post("/{webhook_name}/disable")
 async def disable_webhook(
     webhook_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     禁用 Webhook
@@ -262,7 +262,7 @@ async def disable_webhook(
 @router.post("/{webhook_name}/test")
 async def test_webhook(
     webhook_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     测试 Webhook
@@ -288,7 +288,7 @@ async def test_webhook(
 async def get_webhook_logs(
     webhook_name: str,
     limit: int = Query(default=10, le=100),
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取 Webhook 调用日志
@@ -321,7 +321,7 @@ async def get_webhook_logs(
 @router.get("/{webhook_name}/delivery-stats")
 async def get_webhook_delivery_stats(
     webhook_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取 Webhook 投递统计

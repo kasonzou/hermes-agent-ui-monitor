@@ -7,7 +7,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.core.security import get_current_user
+from app.core.security import verify_api_key
 from app.core.hermes_cli import get_hermes_cli, HermesCLIError
 from app.schemas.response import create_response, create_error_response
 
@@ -18,7 +18,7 @@ router = APIRouter()
 @router.get("")
 async def list_tools(
     enabled_only: bool = Query(default=False, description="仅显示已启用的工具"),
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取工具列表
@@ -57,7 +57,7 @@ async def list_tools(
 @router.get("/{tool_name}")
 async def get_tool(
     tool_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取工具详情
@@ -87,7 +87,7 @@ async def get_tool(
 @router.post("/{tool_name}/enable")
 async def enable_tool(
     tool_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     启用工具
@@ -113,7 +113,7 @@ async def enable_tool(
 @router.post("/{tool_name}/disable")
 async def disable_tool(
     tool_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     禁用工具
@@ -139,7 +139,7 @@ async def disable_tool(
 @router.get("/{tool_name}/config")
 async def get_tool_config(
     tool_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取工具配置
@@ -169,7 +169,7 @@ async def get_tool_config(
 async def update_tool_config(
     tool_name: str,
     config: dict,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     更新工具配置
@@ -198,7 +198,7 @@ async def update_tool_config(
 
 @router.post("/reload")
 async def reload_tools(
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     重新加载工具配置
@@ -223,7 +223,7 @@ async def reload_tools(
 @router.get("/{tool_name}/schema")
 async def get_tool_schema(
     tool_name: str,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     获取工具的 JSON Schema
@@ -253,7 +253,7 @@ async def get_tool_schema(
 async def test_tool(
     tool_name: str,
     params: dict,
-    _: dict = Depends(get_current_user)
+    _: str = Depends(verify_api_key)
 ):
     """
     测试工具执行
