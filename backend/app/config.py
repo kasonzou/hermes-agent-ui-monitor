@@ -16,7 +16,8 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore"
+        extra="ignore",
+        env_parse_none_str=None
     )
 
     # 应用基本信息
@@ -47,19 +48,19 @@ class Settings(BaseSettings):
     hermes_api_port: int = Field(default=8642, description="Hermes API 端口")
     hermes_api_key: str = Field(default="", description="Hermes API 密钥")
 
-    # CORS 配置
-    cors_origins: List[str] = Field(
-        default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"],
-        description="允许的 CORS 来源"
+    # CORS 配置 - 使用逗号分隔的字符串作为环境变量输入
+    cors_origins: str = Field(
+        default="http://localhost:3000,http://127.0.0.1:3000",
+        description="允许的 CORS 来源（逗号分隔）"
     )
     cors_allow_credentials: bool = Field(default=True, description="允许 CORS 携带凭证")
-    cors_allow_methods: List[str] = Field(
-        default_factory=lambda: ["*"],
-        description="允许的 CORS 方法"
+    cors_allow_methods: str = Field(
+        default="*",
+        description="允许的 CORS 方法（逗号分隔）"
     )
-    cors_allow_headers: List[str] = Field(
-        default_factory=lambda: ["*"],
-        description="允许的 CORS 请求头"
+    cors_allow_headers: str = Field(
+        default="*",
+        description="允许的 CORS 请求头（逗号分隔）"
     )
 
     # 日志配置
@@ -74,25 +75,26 @@ class Settings(BaseSettings):
     monitor_poll_interval: int = Field(default=30, description="监控轮询间隔（秒）")
     log_stream_buffer_size: int = Field(default=1000, description="日志流缓冲区大小")
 
-    @field_validator("cors_origins", "cors_allow_methods", "cors_allow_headers", mode="before")
-    @classmethod
-    def parse_list_field(cls, v: Any) -> List[str]:
-        """解析列表字段，处理字符串 JSON 格式"""
-        if isinstance(v, str):
-            v = v.strip()
-            if not v:
-                return []
-            try:
-                parsed = json.loads(v)
-                if isinstance(parsed, list):
-                    return parsed
-                return [v]
-            except json.JSONDecodeError:
-                # 如果是逗号分隔的字符串
-                if "," in v:
-                    return [item.strip() for item in v.split(",")]
-                return [v]
-        return v
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """将 cors_origins 字符串解析为列表"""
+        if not self.cors_origins:
+            return ["http://localhost:3000", "http://127.0.0.1:3000"]
+        return [item.strip() for item in self.cors_origins.split(",")]
+
+    @property
+    def cors_allow_methods_list(self) -> List[str]:
+        """将 cors_allow_methods 字符串解析为列表"""
+        if not self.cors_allow_methods:
+            return ["*"]
+        return [item.strip() for item in self.cors_allow_methods.split(",")]
+
+    @property
+    def cors_allow_headers_list(self) -> List[str]:
+        """将 cors_allow_headers 字符串解析为列表"""
+        if not self.cors_allow_headers:
+            return ["*"]
+        return [item.strip() for item in self.cors_allow_headers.split(",")]
 
     @property
     def hermes_api_base_url(self) -> str:
